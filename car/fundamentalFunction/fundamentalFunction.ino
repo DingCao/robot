@@ -1,47 +1,81 @@
-int enable;       // pin to give energy to motors
-int leftMotor;    // pin of left motor
-int rightMotor;   // pin of right motor
+// pin to give energy to motors
+const int enableLeft = 23;
+const int enableRight = 22;
 
+// pin of left motor
+const int leftMotor = 36;
+// pin of right motor   
+const int rightMotor = 34;
+
+// set up the pins' mode.
 void motorStart() {
-  pinMode(enable, OUTPUT);
+  pinMode(enableLeft, OUTPUT);
+  pinMode(enableRight, OUTPUT);
   pinMode(leftMotor, OUTPUT);
   pinMode(rightMotor, OUTPUT);
-  digitalWrite(enable, HIGH);
+
+  // give the energy of the motors
+  digitalWrite(enableLeft, HIGH);
+  digitalWrite(enableRight, HIGH);
+}
+
+// make a motor run on the right direction or reverse.
+// @Param pin: the pinline of controling a motor
+// @Param mode: 1 for ahead and 0 for reverse
+void setAMotor(int pin, bool mode) {
+  if (pin == leftMotor) {
+      if (mode == 0) {
+        digitalWrite(pin, LOW);
+        digitalWrite(pin+1, HIGH);
+      } else {
+        digitalWrite(pin, HIGH);
+        digitalWrite(pin+1, LOW);
+      }
+  } else if (pin == rightMotor) {
+      if (mode == 0) {
+        digitalWrite(pin, HIGH);
+        digitalWrite(pin+1, LOW);
+      } else {
+        digitalWrite(pin, LOW);
+        digitalWrite(pin+1, HIGH);
+      }
+  } else {
+  }
 }
 
 void ahead() {
-  digitalWrite(leftMotor, LOW);
-  digitalWrite(rightMotor, HIGH);
+  setAMotor(leftMotor, 1);
+  setAMotor(rightMotor, 1);
 }
 
 void turnLeft() {
-  digitalWrite(leftMotor, HIGH);
-  digitalWrite(rightMotor, HIGH);
+  setAMotor(leftMotor, 0);
+  setAMotor(rightMotor, 1);
 }
 
 void turnRight() {
-  digitalWrite(leftMotor, LOW);
-  digitalWrite(rightMotor, LOW);
+  setAMotor(leftMotor, 1);
+  setAMotor(rightMotor, 0);
 }
 
 void back() {
-  digitalWrite(leftMotor, HIGH);
-  digitalWrite(rightMotor, LOW);
+  setAMotor(leftMotor, 0);
+  setAMotor(rightMotor, 0);
 }
 // the setup function runs once when you press reset or power the board
 void setup() {
   motorStart();
-  ahead();
-  delay(1000);
-  turnLeft();
-  delay(1000);
-  turnRight();
-  delay(1000);
-  back();
-  delay(1000);
+  // ahead();
+  // delay(500);
+  // turnLeft();
+  // delay(500);
+  // turnRight();
+  // delay(500);
+  // back();
+  // delay(500);
 }
 
 // the loop function runs over and over again forever
 void loop() {
-
+  ahead();
 }
