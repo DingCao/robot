@@ -15,8 +15,7 @@ void motorStart() {
   pinMode(rightMotor, OUTPUT);
 
   // give the energy of the motors
-  digitalWrite(enableLeft, HIGH);
-  digitalWrite(enableRight, HIGH);
+  go();
 }
 
 // make a motor run on the right direction or reverse.
@@ -62,6 +61,17 @@ void back() {
   setAMotor(leftMotor, 0);
   setAMotor(rightMotor, 0);
 }
+
+void stop() {
+  digitalWrite(enableLeft, LOW);
+  digitalWrite(enableRight, LOW);
+}
+
+void go() {
+  digitalWrite(enableLeft, HIGH);
+  digitalWrite(enableRight, HIGH);
+}
+
 // the setup function runs once when you press reset or power the board
 void setup() {
   motorStart();
@@ -75,7 +85,17 @@ void setup() {
   // delay(500);
 }
 
+
+void turn(int mode) {
+  if (mode) {
+    turnRight();
+  } else {
+    turnLeft();
+  }
+}
+
 // the loop function runs over and over again forever
 void loop() {
+  go();
   ahead();
 }
