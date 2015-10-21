@@ -1,20 +1,22 @@
 // pin to give energy to motors
-const int enableLeft = 23;
-const int enableRight = 22;
+const int enableLeft = 12;
+const int enableRight = 11;
 
 // pin of left motor
 const int leftMotor = 36;
 // pin of right motor   
 const int rightMotor = 34;
 
+const int voltage = 80;
+
 int ledpin = 13;
 // command to control the sonic sensor
 byte DMcmd[4] = { 0x22, 0x00, 0x00, 0x22 };
 
-const int minDistance = 30;
-const int maxDistance = 100;
+const int minDistance = 10;
+const int maxDistance = 20;
 
-int lastDsitance = 0;
+int lastDistance = 0;
 int turnMode = 0;
 void setup() {
   // put your setup code here, to run once:
@@ -28,19 +30,18 @@ void loop() {
   if (minDistance <= distance && distance <= maxDistance) {
     go();
     ahead();
-    delay(200);
-    stop();
   } else if (distance < minDistance) {
-    back();
-    delay(400);
-    stop();
-  } else if (disntance > maxDistance) {
-    if (distance <= LastDistance) {
+    stopGo();
+    //back();
+  } else if (distance > maxDistance) {
+    if (distance <= lastDistance) {
       turn(turnMode);
     } else {
       turn(1-turnMode);
     }
   }
+  stopGo();
+  delay(100);
 }
 
 /* functions to control the motors */
@@ -59,6 +60,10 @@ void motorStart() {
 // @Param pin: the pinline of controling a motor
 // @Param mode: 1 for ahead and 0 for reverse
 void setAMotor(int pin, bool mode) {
+  if (mode == 2) {
+    digitalWrite(pin, HIGH);
+    digitalWrite(pin+1, HIGH);
+  }
   if (pin == leftMotor) {
       if (mode == 0) {
         digitalWrite(pin, LOW);
@@ -79,14 +84,15 @@ void setAMotor(int pin, bool mode) {
   }
 }
 
-void stop() {
-  digitalWrite(enableLeft, LOW);
-  digitalWrite(enableRight, LOW);
+void stopGo() {
+  setAMotor(leftMotor, 2);
+  setAMotor(rightMotor, 2);
+  delay(200);
 }
 
 void go() {
-  digitalWrite(enableLeft, HIGH);
-  digitalWrite(enableRight, HIGH);
+  analogWrite(enableLeft, voltage);
+  analogWrite(enableRight, voltage);
 }
 
 void ahead() {

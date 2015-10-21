@@ -22,6 +22,10 @@ void motorStart() {
 // @Param pin: the pinline of controling a motor
 // @Param mode: 1 for ahead and 0 for reverse
 void setAMotor(int pin, bool mode) {
+  if（mode == 2) {
+    digitalWrite(pin, HIGH);
+    digitalWrite(pin+1, HIGH);
+  }
   if (pin == leftMotor) {
       if (mode == 0) {
         digitalWrite(pin, LOW);
@@ -62,9 +66,9 @@ void back() {
   setAMotor(rightMotor, 0);
 }
 
-void stop() {
-  digitalWrite(enableLeft, LOW);
-  digitalWrite(enableRight, LOW);
+void stopGo() {
+  setAMotor(leftMotor, 2);
+  setAMotor(rightMotor, 2);
 }
 
 void go() {

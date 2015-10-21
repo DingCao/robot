@@ -113,6 +113,7 @@ void setup()
   lcd.print("oSTART");
   lcd.setCursor(9, 1);
   lcd.print("oSCORE");
+  randomSeed(analogRead(0));
 }
 
 void loop()
@@ -185,7 +186,8 @@ void loop()
       //是否需要增加飞机
       //判断是否需要增加飞机
       if (flagPlane) {
-        posY = rand()% 2;
+        
+        posY = random(2);
         posX = 15;
         lcd.setCursor(posX, posY);
         lcd.print("*");
