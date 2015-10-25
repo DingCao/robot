@@ -1,28 +1,43 @@
+#include "Arduino.h"
+
 // pin to give energy to motors
-const int enableLeft = 23;
-const int enableRight = 22;
+const int enableLeft = 3;
+const int enableRight = 2;
 
 // pin of left motor
-const int leftMotor = 36;
+const int leftMotor = 24;
 // pin of right motor   
-const int rightMotor = 34;
+const int rightMotor = 22;
+
+// speed
+const int voltage = 80;
+
+class Car {
+	public:
+		void motorStart();
+		void setAMotor(int pin, bool mode);void ahead();
+		void turnLeft();
+		void turnRight();
+		void back();
+		void stopGo();
+		void turn(int mode);
+};
 
 // set up the pins' mode.
-void motorStart() {
+void Car::motorStart() {
   pinMode(enableLeft, OUTPUT);
   pinMode(enableRight, OUTPUT);
   pinMode(leftMotor, OUTPUT);
+  pinMode(leftMotor + 1, OUTPUT);
   pinMode(rightMotor, OUTPUT);
-
-  // give the energy of the motors
-  go();
+  pinMode(rightMotor + 1, OUTPUT);
 }
 
 // make a motor run on the right direction or reverse.
 // @Param pin: the pinline of controling a motor
 // @Param mode: 1 for ahead and 0 for reverse
-void setAMotor(int pin, bool mode) {
-  if（mode == 2) {
+void Car::setAMotor(int pin, bool mode) {
+  if(mode == 2) {
     digitalWrite(pin, HIGH);
     digitalWrite(pin+1, HIGH);
   }
@@ -43,54 +58,46 @@ void setAMotor(int pin, bool mode) {
         digitalWrite(pin+1, HIGH);
       }
   } else {
+  	/* nothing */
   }
 }
 
-void ahead() {
+void Car::ahead() {
+  analogWrite(enableLeft, voltage);
+  analogWrite(enableRight, voltage);
   setAMotor(leftMotor, 1);
   setAMotor(rightMotor, 1);
 }
 
-void turnLeft() {
+void Car::turnLeft() {
+  analogWrite(enableLeft, voltage);
+  analogWrite(enableRight, voltage);
   setAMotor(leftMotor, 0);
   setAMotor(rightMotor, 1);
 }
 
-void turnRight() {
+void Car::turnRight() {
+  analogWrite(enableLeft, voltage);
+  analogWrite(enableRight, voltage);
   setAMotor(leftMotor, 1);
   setAMotor(rightMotor, 0);
 }
 
-void back() {
+void Car::back() {
+  analogWrite(enableLeft, voltage);
+  analogWrite(enableRight, voltage);
   setAMotor(leftMotor, 0);
   setAMotor(rightMotor, 0);
 }
 
-void stopGo() {
+void Car::stopGo() {
+  analogWrite(enableLeft, 255);
+  analogWrite(enableRight, 255);
   setAMotor(leftMotor, 2);
   setAMotor(rightMotor, 2);
 }
 
-void go() {
-  digitalWrite(enableLeft, HIGH);
-  digitalWrite(enableRight, HIGH);
-}
-
-// the setup function runs once when you press reset or power the board
-void setup() {
-  motorStart();
-  // ahead();
-  // delay(500);
-  // turnLeft();
-  // delay(500);
-  // turnRight();
-  // delay(500);
-  // back();
-  // delay(500);
-}
-
-
-void turn(int mode) {
+void Car::turn(int mode) {
   if (mode) {
     turnRight();
   } else {
@@ -98,8 +105,3 @@ void turn(int mode) {
   }
 }
 
-// the loop function runs over and over again forever
-void loop() {
-  go();
-  ahead();
-}
