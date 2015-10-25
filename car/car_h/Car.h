@@ -10,7 +10,7 @@ const int leftMotor = 24;
 const int rightMotor = 22;
 
 // default speed
-const int dfvoltage = 80;
+const int dfvoltage = 70;
 
 class Car {
 	public:
@@ -45,6 +45,8 @@ void Car::motorStart() {
   pinMode(leftMotor + 1, OUTPUT);
   pinMode(rightMotor, OUTPUT);
   pinMode(rightMotor + 1, OUTPUT);
+  digitalWrite(enableLeft, LOW);
+  digitalWrite(enableRight, LOW);
 }
 
 // make a motor run on the right direction or reverse.
@@ -53,10 +55,13 @@ void Car::motorStart() {
 // @Param voltage: control the speed, 0 - 255
 void Car::setAMotor(int pin, int mode, int voltage = dfvoltage) {
   if(mode == 2) {
-  	analogWrite(enableLeft, 255);
-  	analogWrite(enableRight, 255);
-    digitalWrite(pin, HIGH);
-    digitalWrite(pin+1, HIGH);
+  	if (pin == leftMotor) {
+  		analogWrite(enableLeft, 255);
+  	} else {
+  		analogWrite(enableRight, 255);
+  	}
+    digitalWrite(pin, LOW);
+    digitalWrite(pin+1, LOW);
     return;
   }
   if (pin == leftMotor) {
