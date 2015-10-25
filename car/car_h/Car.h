@@ -6,22 +6,36 @@ const int enableRight = 2;
 
 // pin of left motor
 const int leftMotor = 24;
-// pin of right motor   
+// pin of right motor
 const int rightMotor = 22;
 
-// speed
-const int voltage = 80;
+// default speed
+const int dfvoltage = 80;
 
 class Car {
 	public:
+		Car();
+		Car(int voltage);
 		void motorStart();
-		void setAMotor(int pin, bool mode);void ahead();
+		void setAMotor(int pin, int mode, int voltage);
+		void ahead();
 		void turnLeft();
 		void turnRight();
 		void back();
 		void stopGo();
 		void turn(int mode);
+	private:
+		// speed
+		int voltage;
 };
+
+// set up the speed
+Car::Car() {
+	voltage = dfvoltage;
+}
+Car::Car(int voltage) {
+	this->voltage = voltage;
+}
 
 // set up the pins' mode.
 void Car::motorStart() {
@@ -35,73 +49,51 @@ void Car::motorStart() {
 
 // make a motor run on the right direction or reverse.
 // @Param pin: the pinline of controling a motor
-// @Param mode: 1 for ahead and 0 for reverse
-void Car::setAMotor(int pin, bool mode) {
+// @Param mode: 1 for ahead and 0 for reverse, 2 for stop
+// @Param voltage: control the speed, 0 - 255
+void Car::setAMotor(int pin, int mode, int voltage = dfvoltage) {
   if(mode == 2) {
+  	analogWrite(enableLeft, 255);
+  	analogWrite(enableRight, 255);
     digitalWrite(pin, HIGH);
     digitalWrite(pin+1, HIGH);
+    return;
   }
   if (pin == leftMotor) {
-      if (mode == 0) {
-        digitalWrite(pin, LOW);
-        digitalWrite(pin+1, HIGH);
-      } else {
-        digitalWrite(pin, HIGH);
-        digitalWrite(pin+1, LOW);
-      }
-  } else if (pin == rightMotor) {
-      if (mode == 0) {
-        digitalWrite(pin, HIGH);
-        digitalWrite(pin+1, LOW);
-      } else {
-        digitalWrite(pin, LOW);
-        digitalWrite(pin+1, HIGH);
-      }
+  	analogWrite(enableLeft, voltage);
   } else {
-  	/* nothing */
+  	analogWrite(enableRight, voltage);
+  }
+  if (mode == 0) {
+    digitalWrite(pin, HIGH);
+    digitalWrite(pin+1, LOW);
+  } else {
+    digitalWrite(pin, LOW);
+    digitalWrite(pin+1, HIGH);
   }
 }
-
 void Car::ahead() {
-  analogWrite(enableLeft, voltage);
-  analogWrite(enableRight, voltage);
   setAMotor(leftMotor, 1);
   setAMotor(rightMotor, 1);
 }
 
 void Car::turnLeft() {
-  analogWrite(enableLeft, voltage);
-  analogWrite(enableRight, voltage);
   setAMotor(leftMotor, 0);
   setAMotor(rightMotor, 1);
 }
 
 void Car::turnRight() {
-  analogWrite(enableLeft, voltage);
-  analogWrite(enableRight, voltage);
   setAMotor(leftMotor, 1);
   setAMotor(rightMotor, 0);
 }
 
 void Car::back() {
-  analogWrite(enableLeft, voltage);
-  analogWrite(enableRight, voltage);
   setAMotor(leftMotor, 0);
   setAMotor(rightMotor, 0);
 }
 
 void Car::stopGo() {
-  analogWrite(enableLeft, 255);
-  analogWrite(enableRight, 255);
   setAMotor(leftMotor, 2);
   setAMotor(rightMotor, 2);
-}
-
-void Car::turn(int mode) {
-  if (mode) {
-    turnRight();
-  } else {
-    turnLeft();
-  }
 }
 
