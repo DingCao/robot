@@ -1,3 +1,7 @@
+// caution
+// something was wrong with this class and stop using it
+// caution
+
 #include "Arduino.h"
 
 // command to control the sonic sensor
