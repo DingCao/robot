@@ -1,12 +1,13 @@
 #include <Car.h>
-#include <URM.h>
+#include <URM2.h>
 #include <Servo.h>
 
 Car car;
-URM myURM;
+URM2 myURM;
 
 Servo myservo;
 
+const int resetPin = 52;
 const int minDistance = 15;
 const int maxDistance = 30;
 const int blockedDistance = 8;
@@ -23,9 +24,21 @@ void setup() {
   myURM.sonicStart();
   myservo.attach(9);
   myservo.write(range);
+  pinMode(resetPin, INPUT);
+  digitalWrite(resetPin, LOW);
 }
 
 void loop() {
+  int resetPinState = digitalRead(resetPin);
+  if (resetPinState == HIGH) {
+    myservo.write(head);
+    delay(2000);
+    myservo.write(head - 90);
+    delay(2000);
+    myservo.write(head + 90);
+    delay(2000);
+    return;
+  }
   // put your main code here, to run repeatedly:
   boolean finded = false;
   for(int i = head - range; i <= head + range; i += 5) {
