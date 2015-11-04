@@ -21,7 +21,7 @@ int URM::getDistance() {
   // 是否测量到有效距离值
   bool flag = false;
   int USValue;
-  
+
   // 发送超声波测距命令
   for (int i = 0; i < 4; i++) Serial.write(DMcmd[i]);
   while (!flag) {
@@ -46,8 +46,7 @@ int URM::getDistance() {
       }
     }
     flag = true;
-    delay(100);
+    // delay(100);
   }
     return USValue;
 }
-
