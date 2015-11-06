@@ -10,7 +10,7 @@ const int leftMotor = 24;
 const int rightMotor = 22;
 
 // default speed
-const int dfvoltage = 90;
+const int dfvoltage = 70;
 
 class Car {
 	public:
@@ -102,7 +102,7 @@ void Car::back() {
 }
 
 void Car::stopGo() {
-  setAMotor(leftMotor, 2, voltage);
-  setAMotor(rightMotor, 2, voltage);
+  setAMotor(leftMotor, 2);
+  setAMotor(rightMotor, 2);
 }
 
