@@ -2,17 +2,22 @@
 #include <URM2.h>
 #include <Servo.h>
 
+#define RTOL false
+#define LTOR true
+
 Car car;
 URM2 myURM;
-
 Servo myservo;
 
 const int resetPin = 52;
+
 const int minDistance = 15;
 const int maxDistance = 30;
 const int blockedDistance = 8;
 
 const int head = 90;
+const int scan_angle = 5;
+
 int range = 60;
 int straightRange = 20;
 // go straight in the range between 
@@ -23,12 +28,17 @@ void setup() {
   car.motorStart();
   myURM.sonicStart();
   myservo.attach(9);
-  myservo.write(range);
+  myservo.write(head - range);
   pinMode(resetPin, INPUT);
   digitalWrite(resetPin, LOW);
 }
 
+boolean scanDirection = RTOL;
+boolean finded = false;
+
 void loop() {
+  // put your main code here, to run repeatedly:
+  // reset the direction of URM37
   int resetPinState = digitalRead(resetPin);
   if (resetPinState == HIGH) {
     myservo.write(head);
@@ -39,27 +49,37 @@ void loop() {
     delay(2000);
     return;
   }
-  // put your main code here, to run repeatedly:
-  boolean finded = false;
-  for(int i = head - range; i <= head + range; i += 5) {
-    myservo.write(i);
-    int distance = myURM.getDistance();
+  if (scanDirection == RTOL) {
+    finded = false;
+  }
+  for(int i = head - range; i <= head + range; i += scan_angle) {
+    int p;
+    if (scanDirection == RTOL) {
+      p = i;
+    } else {
+      p = 180 - i;
+    }
+    myservo.write(p);
+
+    int distance;
+    distance = myURM.getDistance();
+
     if (minDistance <= distance && distance <= maxDistance) {
-      if (i >= head - straightRange && i <= head + straightRange) {
+      if (p >= head - straightRange && p <= head + straightRange) {
         while (true) {
           car.ahead();
-          delay(5);
+          delay(50);
           distance = myURM.getDistance();
           if (minDistance > distance || distance > maxDistance) {
             car.stopGo();
             break;
           }
         }
-      } else if (i >= head - range && i < head - straightRange) {
+      } else if (p >= head - range && p < head - straightRange) {
         car.setAMotor(leftMotor, 1);
         car.setAMotor(rightMotor, 2);
       } else {
-        // i <= head  + range && i > head + straightRange
+        // p <= head  + range && p > head + straightRange
         car.setAMotor(leftMotor, 2);
         car.setAMotor(rightMotor, 1);
       }
@@ -71,46 +91,14 @@ void loop() {
     } else {
       car.stopGo();
     }
-    delay(15);
+    delay(50);
   }
 
-  for(int i = head + range; i >= head - range ; i -= 5) {
-    myservo.write(i);
-    int distance = myURM.getDistance();
-    if (minDistance <= distance && distance <= maxDistance) {
-      if (i >= head - straightRange && i <= head + straightRange) {
-        while (true) {
-          car.ahead();
-          delay(5);
-          distance = myURM.getDistance();
-          if (minDistance > distance || distance > maxDistance) {
-            car.stopGo();
-            break;
-          }
-        }
-      } else if (i >= head - range && i < head - straightRange) {
-        car.setAMotor(leftMotor, 1);
-        car.setAMotor(rightMotor, 2);
-      } else {
-        // i <= head  + range && i > head + straightRange
-        car.setAMotor(leftMotor, 2);
-        car.setAMotor(rightMotor, 1);
-      }
-      finded = true;
-    } else if (distance <= blockedDistance){
-      car.back();
-      delay(100);
-      car.stopGo();
-    } else {
-      car.stopGo();
-    }
-    delay(15);
-  }
-
-  if (!finded) {
+  if (scanDirection == LTOR && !finded) {
     car.turnLeft();
-    delay(1000);
+    delay(500);
     car.stopGo();
   }
+  scanDirection = !scanDirection;
 }
 
