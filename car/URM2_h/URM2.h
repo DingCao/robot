@@ -17,16 +17,16 @@
 // #       Pin 4 PWM (URM V3.2) -> Pin 4 (Arduino)
 // #       Pin 6 COMP/TRIG (URM V3.2) -> Pin 5 (Arduino)
 // #
-int URPWM = 4; // PWM Output 0£­25000US£¬Every 50US represent 1cm
-int URTRIG=5; // PWM trigger pin
+unsigned long URPWM=4;  // PWM Output 0-25000US, Every 50US represent 1cm
+unsigned long URTRIG=5;  // PWM trigger pin
 
-uint8_t EnPwmCmd[4]={0x44,0x02,0xbb,0x01};    // distance measure command
+uint8_t EnPwmCmd[4]={0x44,0x02,0xbb,0x01}; // distance measure command
 
 class URM2
 {
-	public:
-		void sonicStart();
-		int getDistance();
+    public:
+        void sonicStart();
+        unsigned long getDistance();
 };
 
 void PWM_Mode_Setup();
@@ -45,30 +45,44 @@ void PWM_Mode_Setup()
    
   pinMode(URPWM, INPUT);                      // Sending Enable PWM mode command
    
-  for(int i=0;i<4;i++)
+  for(unsigned long i=0;i<4;i++)
   {
       Serial.write(EnPwmCmd[i]);
   } 
 }
 
-int URM2::getDistance()
+unsigned long URM2::getDistance()
 {                              // a low pull on pin COMP/TRIG  triggering a sensor reading
-    digitalWrite(URTRIG, LOW);
-    digitalWrite(URTRIG, HIGH);               // reading Pin PWM will output pulses
-      
-    int DistanceMeasured=pulseIn(URPWM,LOW);
-      
-    if(DistanceMeasured>=10200)
-    {              // the reading is invalid.
-      Serial.println("Invalid");
-    }
-    else
-    {
-      int Distance=DistanceMeasured/50;           // every 50us low level stands for 1cm
-      Serial.print("Distance=");
-      Serial.print(Distance);
-      Serial.println("cm");
-      return Distance;
+    boolean  isValid = false; 
+
+    unsigned long previousMillis = millis();
+    unsigned long currentMillis = millis();
+    while (currentMillis - previousMillis <= 100 && !isValid) {
+    // the time keep getting distance before it is valid
+        digitalWrite(URTRIG, LOW);
+        digitalWrite(URTRIG, HIGH);               // reading Pin PWM will output pulses
+          
+        unsigned long DistanceMeasured=pulseIn(URPWM,LOW);
+          
+        if(DistanceMeasured>15000)
+        {              // the reading is invalid.
+          Serial.println("Invalid");
+          isValid = false;
+        }
+        else
+        {
+          unsigned long Distance=DistanceMeasured/50;           // every 50us low level stands for 1cm
+          Serial.print("Distance=");
+          Serial.print(Distance);
+          Serial.println("cm");
+          isValid = true;
+          return Distance;
+	    }
+		currentMillis = millis();
+	}
+	if (!isValid) {
+	    unsigned long Distance=300;
+	    return Distance;
     }
 }
 
