@@ -1,14 +1,16 @@
 #include <Car.h>
 
 // control pins
-const int leftPin
-const int centerPin
-const int rightPin
+const int leftPin = 31;
+const int centerPin = 32;
+const int rightPin = 33;
 
 // states
 int center;
 int left;
 int right;
+
+Car car;
 
 void setup() {
   pinMode(leftPin, INPUT);
@@ -19,12 +21,13 @@ void setup() {
 void loop() {
   getState();
   if (center == LOW) {
-    if (left == LOW && right == HIGH) turnRight();
-    else if (left == HIGH && right == LOW) turnLeft(); 
-    else if (left == HIGH && right == HIGH) ahead();
-    else
+    car.ahead();
+  } else if (left == LOW && right == HIGH) {
+    car.turnLeft();
+  } else if(left == HIGH && right == LOW) {
+    car.turnRight();
   } else {
-    stopGo();
+    car.stopGo();
   }
 }
 
