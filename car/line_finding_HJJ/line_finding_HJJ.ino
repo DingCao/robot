@@ -1,16 +1,18 @@
 #include <Car.h>
 
 // control pins
-const int leftPin = 31;
-const int centerPin = 32;
-const int rightPin = 33;
+const int centerPin = 19;
+const int leftPin = 20;
+const int rightPin = 21;
 
 // states
 int center;
 int left;
 int right;
 
-Car car;
+const int voltage = 255;
+
+Car car(voltage);
 
 void setup() {
   pinMode(leftPin, INPUT);
@@ -24,10 +26,12 @@ void loop() {
     car.ahead();
   } else if (left == LOW && right == HIGH) {
     car.turnLeft();
-  } else if(left == HIGH && right == LOW) {
+    // delay(50);
+  } else if (left == HIGH && right == LOW) {
     car.turnRight();
+    // delay(50);
   } else {
-    car.stopGo();
+    car.ahead();
   }
 }
 
